@@ -1,0 +1,27 @@
+<div class="bundlewise-container">
+  <mat-form-field appearance="outline">
+    <mat-label>Package Name (e.g. lodash(at)latest)</mat-label>
+    <input matInput [(ngModel)]="packageName" placeholder="Enter package name">
+  </mat-form-field>
+
+  <div class="file-upload">
+    <input type="file" #fileInput hidden (change)="onFileSelected($event)" accept=".tgz">
+    <label mat-raised-button color="primary" for="fileInput">
+      <mat-icon>upload</mat-icon>
+      Upload .tgz
+    </label>
+    <span *ngIf="file">{{ file.name }}</span>
+  </div>
+
+  <button mat-raised-button color="accent" (click)="analyze()" [disabled]="!packageName && !file">
+    <mat-icon>search</mat-icon>
+    Analyze
+  </button>
+
+  <mat-spinner *ngIf="loading()" diameter="40"></mat-spinner>
+
+  <div *ngIf="result()" class="result">
+    <mat-icon color="success">check_circle</mat-icon>
+    {{ result() }}
+  </div>
+</div>
