@@ -13,6 +13,7 @@
            accept=".tgz">
     <p>or upload a tgz
       <button mat-mini-fab
+              type="button"
               color="primary"
               class="upload-btn"
               (click)="fileUpload.click()">
@@ -20,29 +21,51 @@
       </button>
     </p>
     @if (file) {
-    <span>{{ file.name }}</span>
+    <p>{{ file.name }}</p>
     }
   </div>
-  <button mat-raised-button
-          color="accent"
-          (click)="analyze()"
-          [disabled]="!packageName && !file">
-    <mat-icon>search</mat-icon>
-    Analyze
-  </button>
-  <button mat-raised-button
-          color="accent"
-          type="reset">
-    <mat-icon>reset</mat-icon>
-    Reset
-  </button>
+  <div class="form-buttons">
+    <button mat-raised-button
+            color="accent"
+            (click)="analyze()"
+            [disabled]="!packageName && !file">
+      <mat-icon>search</mat-icon>
+      Analyze
+    </button>
+    <button mat-raised-button
+            (click)="file = undefined"
+            color="accent"
+            type="reset">
+      <mat-icon>backspace</mat-icon>
+      Reset
+    </button>
+  </div>
 </form>
 @if (loading()) {
 <mat-spinner diameter="40"></mat-spinner>
 }
-@if(result()) {
-<div lass="result">
+
+@if (result()) {
+<div class="result">
   <mat-icon color="success">check_circle</mat-icon>
-  {{ result() }}
+  <p>{{ result()?.message }}</p>
+  <p>Raw size: <strong>{{ result()?.rawSize}}KB</strong></p>
+  <p>Gzipped: <strong>{{ result()?.gzippedSize}}KB</strong></p>
 </div>
+}
+
+@if (pkgJson()) {
+<pre class="json-box">{{ pkgJson() | json }}</pre>
+}
+
+@if (publintIssues()?.length) {
+<ul>
+  @for (issue of publintIssues(); track issue) {
+  <li>
+    <strong>{{ issue.code }}</strong>: {{ issue.message }}
+    <br>
+    <small>Path: {{ issue.path.join(' > ') }}</small>
+  </li>
+  }
+</ul>
 }
