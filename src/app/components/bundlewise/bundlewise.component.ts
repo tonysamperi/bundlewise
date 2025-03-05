@@ -2,24 +2,27 @@ import { Component, WritableSignal, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
+import { MatButtonModule, MatMiniFabButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
-import { NgIf } from '@angular/common';
+//
+import { Bundlewise } from '../../shared/bundlewise.class';
 
 @Component({
   selector: 'app-bundlewise',
   standalone: true,
   imports: [
-    NgIf,
     FormsModule,
+    //
+    MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule,
     MatIconModule,
+    MatMiniFabButton,
     MatProgressSpinnerModule
   ],
+  providers: [HttpClient],
   templateUrl: './bundlewise.component.html',
   styleUrls: ['./bundlewise.component.scss']
 })
@@ -29,7 +32,7 @@ export class BundlewiseComponent {
   loading: WritableSignal<boolean> = signal(false);
   result: WritableSignal<string | null> = signal(null);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -38,17 +41,19 @@ export class BundlewiseComponent {
     }
   }
 
-  analyze() {
+  async analyze() {
     if (!this.packageName && !this.file) {
       return;
     }
     this.loading.set(true);
     this.result.set(null);
-    
-    // Placeholder logic for handling analysis
-    setTimeout(() => {
-      this.loading.set(false);
-      this.result.set(`Analysis completed for ${this.packageName || this.file?.name}`);
-    }, 2000);
+    try {
+      const bundlewiseReport = await new Bundlewise(this.file || this.packageName).run();
+    }
+    catch (e) {
+      alert("Error!");
+    }
+    this.loading.set(false);
+    this.result.set(`Analysis completed for ${this.packageName || this.file?.name}`);
   }
 }

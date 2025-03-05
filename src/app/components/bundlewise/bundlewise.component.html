@@ -1,27 +1,48 @@
-<div class="bundlewise-container">
+<form>
   <mat-form-field appearance="outline">
-    <mat-label>Package Name (e.g. lodash(at)latest)</mat-label>
-    <input matInput [(ngModel)]="packageName" placeholder="Enter package name">
+    <mat-label>Pkg Name (e.g. foo&#64;1.2.0 or foo)</mat-label>
+    <input matInput
+           name="package_name"
+           [(ngModel)]="packageName">
   </mat-form-field>
-
   <div class="file-upload">
-    <input type="file" #fileInput hidden (change)="onFileSelected($event)" accept=".tgz">
-    <label mat-raised-button color="primary" for="fileInput">
-      <mat-icon>upload</mat-icon>
-      Upload .tgz
-    </label>
-    <span *ngIf="file">{{ file.name }}</span>
+    <input type="file"
+           #fileUpload
+           hidden
+           (change)="onFileSelected($event)"
+           accept=".tgz">
+    <p>or upload a tgz
+      <button mat-mini-fab
+              color="primary"
+              class="upload-btn"
+              (click)="fileUpload.click()">
+        <mat-icon>attach_file</mat-icon>
+      </button>
+    </p>
+    @if (file) {
+    <span>{{ file.name }}</span>
+    }
   </div>
-
-  <button mat-raised-button color="accent" (click)="analyze()" [disabled]="!packageName && !file">
+  <button mat-raised-button
+          color="accent"
+          (click)="analyze()"
+          [disabled]="!packageName && !file">
     <mat-icon>search</mat-icon>
     Analyze
   </button>
-
-  <mat-spinner *ngIf="loading()" diameter="40"></mat-spinner>
-
-  <div *ngIf="result()" class="result">
-    <mat-icon color="success">check_circle</mat-icon>
-    {{ result() }}
-  </div>
+  <button mat-raised-button
+          color="accent"
+          type="reset">
+    <mat-icon>reset</mat-icon>
+    Reset
+  </button>
+</form>
+@if (loading()) {
+<mat-spinner diameter="40"></mat-spinner>
+}
+@if(result()) {
+<div lass="result">
+  <mat-icon color="success">check_circle</mat-icon>
+  {{ result() }}
 </div>
+}
